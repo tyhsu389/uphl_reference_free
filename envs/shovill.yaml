@@ -1,0 +1,66 @@
+name: shovill
+channels:
+  - conda-forge
+  - broad-viral
+  - bioconda
+  - defaults
+  - r
+dependencies:
+  - bwa=0.7.17=ha92aebf_3
+  - flash=1.2.11=ha92aebf_2
+  - libdeflate=1.0=h470a237_0
+  - lighter=1.1.1=he941832_4
+  - mash=2.0=gsl1.16_1
+  - megahit=1.1.3=py36_0
+  - perl-file-spec=3.48_01=pl526_1
+  - perl-findbin=1.51=pl526_1
+  - pilon=1.22=1
+  - samclip=0.2=1
+  - samtools=1.9=h8ee4bcc_1
+  - seqtk=1.3=ha92aebf_0
+  - shovill=1.0.1=0
+  - skesa=2.3.0=h4ef8376_0
+  - spades=3.12.0=1
+  - trimmomatic=0.38=1
+  - velvet=1.2.10=h470a237_2
+  - boost=1.67.0=py36h3e44d54_0
+  - boost-cpp=1.67.0=h3a22d5f_0
+  - bzip2=1.0.6=h470a237_2
+  - ca-certificates=2018.10.15=ha4d7672_0
+  - capnproto=0.6.1=hfc679d8_1
+  - certifi=2018.10.15=py36_1000
+  - curl=7.61.1=h74213dd_2
+  - gsl=1.16=0
+  - icu=58.2=hfc679d8_0
+  - krb5=1.16.1=hbb41f41_0
+  - libcurl=7.61.1=hbdb9355_2
+  - libedit=3.1.20170329=haf1bffa_1
+  - libffi=3.2.1=hfc679d8_5
+  - libgcc=7.2.0=h69d50b8_2
+  - libgcc-ng=7.2.0=hdf63c60_3
+  - libgfortran-ng=7.2.0=hdf63c60_3
+  - libssh2=1.8.0=h5b517e9_2
+  - libstdcxx-ng=7.2.0=hdf63c60_3
+  - mkl_fft=1.0.6=py36_0
+  - mkl_random=1.0.1=py36_0
+  - ncurses=6.1=hfc679d8_1
+  - openssl=1.0.2p=h470a237_1
+  - perl=5.26.2=h470a237_0
+  - pigz=2.3.4=0
+  - pip=18.1=py36_1000
+  - python=3.6.6=h5001a0f_3
+  - readline=7.0=haf1bffa_1
+  - setuptools=40.4.3=py36_0
+  - sqlite=3.25.2=hb1c47c0_0
+  - tk=8.6.8=ha92aebf_0
+  - wheel=0.32.1=py36_0
+  - xz=5.2.4=h470a237_1
+  - zlib=1.2.11=h470a237_3
+  - blas=1.0=mkl
+  - intel-openmp=2019.0=118
+  - mkl=2019.0=118
+  - numpy=1.15.0=py36h1b885b7_0
+  - numpy-base=1.15.0=py36h3dfced4_0
+  - openjdk=8.0.152=h46b5887_1
+prefix: /home/workflows/miniconda3/envs/shovill
+

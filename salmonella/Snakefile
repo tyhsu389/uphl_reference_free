@@ -1,0 +1,46 @@
+configfile: "config.yaml"
+
+# Get samples
+SAMPLES = []
+for sample in open( config["samples"], "r" ):
+        name = re.sub( "_R[1-9]_001.fastq.gz", "", sample.strip() )
+        SAMPLES.append( name )
+
+print( SAMPLES )
+
+# Run workflow
+subworkflow reffree:
+	workdir: "../"
+	snakefile: "../Snakefile"
+
+rule final:
+	input:  expand( ["mash/{sample}_clean_all.fastq.msh.distance.txt.sorted.txt", "seqsero/{sample}/data_log.txt"], sample=SAMPLES )
+
+rule mash:
+	input:
+		PE1 = reffree( "seqyclean/{sample}_PE1.fastq" ),
+		PE2 = reffree( "seqyclean/{sample}_PE2.fastq" ),
+		SE = reffree( "seqyclean/{sample}_SE.fastq" )
+	output:
+		"mash/{sample}_clean_all.fastq.msh.distance.txt.sorted.txt"
+	run:
+		commands = [
+			"cat {input.PE1} {input.PE2} {input.SE} > mash/{wildcards.sample}_clean_all.fastq",
+			"mash sketch -m 2 mash/{wildcards.sample}_clean_all.fastq",
+			"mash dist /home/workflows/reference_free/ref/refseq.genomes.k21s1000.msh mash/{wildcards.sample}_clean_all.fastq.msh > mash/{wildcards.sample}_clean_all.fastq.msh.distance.txt",
+			"sort -gk3 mash/{wildcards.sample}_clean_all.fastq.msh.distance.txt > mash/{wildcards.sample}_clean_all.fastq.msh.distance.txt.sorted.txt"
+			]
+		for c in commands:
+			shell(c)
+
+rule seqsero:
+	input:
+		PE1 = reffree( "seqyclean/{sample}_PE1.fastq" ),
+		PE2 = reffree( "seqyclean/{sample}_PE2.fastq" )
+	output:
+		"seqsero/{sample}/data_log.txt",
+		"seqsero/{sample}/Seqsero_result.txt"
+	conda:
+		reffree( "envs/seqsero.yaml" )
+	shell:
+		"/home/workflows/reference_free/SeqSero-master/SeqSero.py -m 2 -d seqsero/{wildcards.sample} -i {input.PE1} {input.PE2}"
