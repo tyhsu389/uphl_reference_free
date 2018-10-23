@@ -1,10 +1,12 @@
 # UPHL_Reference_Free
 
-Houses scripts Tiffany Hsu wrote to run the UPHL Reference Free pipeline, as well as the documentation for running it.
+Houses scripts Tiffany Hsu wrote to run the UPHL Reference Free pipeline, as \
+well as the documentation for running it.
 
 ## Step 1: Login to your username. Pull or copy the repository into any location.
 
-Pulling the repository is preferred, but the internet speeds are slow, so this make take up to 30 minutes.  
+Pulling the repository is preferred, but the internet speeds are slow, so this \
+make take up to 30 minutes.  
 Copying the repository should be almost instantaneous.
 
 ```
@@ -19,8 +21,10 @@ $ chown <YOURUSER>:state -R uphl_reference_free
 
 ## Step 2: Create the directories for the pipeline.
 
-Tiffany connected the tools within the UPHL Reference Free pipeline using the tool SnakeMake. SnakeMake requires you to create \
-directories (or folders) to store the output before being run. Create directories within the `uphl_reference_free` folder.
+Tiffany connected the tools within the UPHL Reference Free pipeline using the \
+tool SnakeMake. SnakeMake requires you to create directories (or folders) to \
+store the output before being run. Create directories within the \
+`uphl_reference_free` folder.
 
 ```
 # Run the included script to generate the directories.
@@ -29,8 +33,9 @@ $ sh scripts/initiate_dirs.sh
 
 ## Step 3: Add your samples to the folder and put them in a list.
 
-Samples should be inside `uphl_reference_free/BaseCalls` (inside a folder named `BaseCalls`). We only need the `fastq.gz` files. \
-After, add the names of the `R1_001.fastq.gz` files to a file named `samples.txt`.
+Samples should be inside `uphl_reference_free/BaseCalls` (inside a folder named\
+`BaseCalls`). We only need the `fastq.gz` files. After, add the names of the \
+`R1_001.fastq.gz` files to a file named `samples.txt`.
 
 ```
 # Move your files (in a folder named "BaseCalls" to the uphl_reference_free folder.
@@ -38,6 +43,8 @@ $ cp -r /path/to/BaseCalls /path/to/uphl_reference_free
 
 # Create a file with your sample names
 $ ls -lh BaseCalls/* | cut -f10 -d' ' - > samples.txt
+# You will probably have to check this multiple times, the number will not always\
+be "10" after "-f10"
 
 # Open up the text file to take a look
 $ vi samples.txt
@@ -46,12 +53,147 @@ $ vi samples.txt
 # Type ":w" to write/save your changes.
 ```
 
-## Step 4: Run the main pipeline.
 
-At this point, you should be ready to run the main pipeline. To do this, invoke Snakemake.
+## Step 4: Run the pipeline-of-interest.
 
+At this point, you should be ready to run the:
+1. Main pipeline
+2. _Salmonella_ pipeline
+3. _E. coli_ pipeline
+
+To do this, invoke Snakemake. Note that each pipeline currently needs to be invoked \
+separately. One of my goals is to make it so that by running the _Salmonella_ \
+OR _E. coli_ pipeline, you automatically invoke the main pipeline.
+
+### Running the main pipeline
 ```
 # Make sure you are in the folder "uphl_reference_free" 
-$ snakemake -j
-# j allows your computer to use all the resources it has access to.
+# Activate the snakemake environment
+$ source activate /home/workflows/miniconda3/envs/snakemake
+
+# Run the pipeline
+$ snakemake -j --use-conda
+# -j specifies what resources your computer can use to run th pipeline \
+# we have up to 32 cores, but if you don't specify the value it will simply use \
+all 32
+# --use-conda forces the pipeline to install the other tools in your folder
 ```
+
+### Running the _Salmonella_ pipeline.
+This pipeline runs MASH, for checking the genus and species, as well as \
+SeqSero (for typing Salmonella) on the cleaned reads (results from SeqyClean).
+```
+# Activate the snakemake environment
+$ source activate /home/workflows/miniconda3/envs/snakemake
+
+# Assuming you are in the "uphl_reference_free" folder, change directory into \
+the salmonella folder
+$ cd ./salmonella
+
+# Copy over the "samples.txt" files. Samples are still under the "BaseCalls"\
+folder.
+$ cp ../samples.txt .
+
+# Run the pipeline
+$ snakemake -j --use-conda
+```
+
+### Run the _E. coli_ pipeline.
+This pipeline only runs SerotypeFinder and ResFinder on the assembled contigs \
+(results from Shovill). It is currently incomplete.
+```
+# Activate the snakemake environment
+$ source activate /home/workflows/miniconda3/envs/snakemake
+
+# Assuming you are in the "uphl_reference_free" folder, change directory into \
+the ecoli folder
+$ cd ./ecoli
+
+# Copy over the "samples.txt" files. Samples are still under the "BaseCalls"\
+folder.
+$ cp ../samples.txt .
+
+# Run the pipeline
+$ snakemake -j --use-conda
+```
+
+
+## Step 5: Find the pan-genome.
+
+The pan-genome is defined as "all of the genes within a set of genomes." We will\
+be using the tool (Roary)[https://sanger-pathogens.github.io/Roary/] to generate
+the pan-genome. 
+
+Roary takes genes from your set of genomes, and determine which genes are "core"\
+genes (all species have them) as opposed to "dipensable" (specific to certain \
+strains or species). In order to compare our strain set, we will be using the \
+core genome output by Roary.
+
+```
+# 1. Identify all of the samples (genomes) you want to compare.
+# 2. Take the genome file formats (gffs) generated by Prokka and place them in \
+a folder. Make sure you are in the "uphl_reference_free" directory.
+$ cd /path/to/uphl_reference_free
+$ cp -r /path/to/prokka/*.gff /path/to/to_compare
+
+# 3. Activate the Roary environment.
+$ source activate /home/workflows/miniconda3/envs/roary
+
+# 4. Make a directory for results, and run Roary
+$ mkdir roary
+$ roary -p 32 -f roary -e -n path/to/to_compare/*.gff
+```
+
+
+## Step 6: Create a tree.
+
+We will use iqtree, which uses maximum likelihood methods to create a tree.
+
+```
+# 1. Make a directory for the results
+$ mkdr roary/iqtree 
+
+# 2. Run iqtree
+$ /home/workflows/programs/iqtree-1.6.7.1-Linux/bin/iqtree -s roary/core_gene_alignment.aln \
+-t RANDOM -m HKY+I+R -bb 1000 -pre /roary/iqtree/iqtree -nt AUTO
+# Note that -pre gives the files a prefix
+```
+
+
+## Step 7: Visualize the tree.
+
+UPHL does this in R. We can do this in:
+1. FigTree
+2. CLC Genomics Workbench
+
+### FigTree
+```
+# Start FigTree 
+$ java -jar /home/workflows/programs/FigTree_v1.4.3/lib/figtree.jar
+# This should launch a user interface for FigTree
+```
+#### Within the program:
+1. Go to: "File" > "Open". Then select your file, which should have the ending \
+`*.treefile` (the tree) or `*.contree` (the consensus tree). You usually want the \
+former.
+2. You can manually annotate your samples if needed. However, if you have many \
+samples to annotate, you may want to use "File" > "Import Annotations".
+
+### CLC Genomics Workbench
+1. CLC Genomics Workbench cannot see your files unless they are under \
+`/home/<YOUR_USERNAME>/CLC_Data`. Move your iqtree files to a folder there.
+2. You can then launch "CLC Genomics Workbench" and double click the `*.treefile` \
+(the tree) or `*.contree` (the consensus tree) to view them.
+
+
+## Helpful Tips:
+* To check the status of the computer, use the command `htop`. This will show you \
+the resources the computer is currently using.
+* For now, after running this pipeline the first time, I would:
+  * Start from Step 3, adding any new files into the folder `BaseCalls` and sample \
+    names into the file `samples.txt`
+  * Why is this?
+    * If you repeat this from the start each time, you will have to redownload \
+      all the programs (shovill, prokka, etc) each time.
+    * This would normally not be a problem, but with the current internet speed,\
+      will add another 1-2 hours to the pipeline.
