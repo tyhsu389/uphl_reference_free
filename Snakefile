@@ -18,7 +18,7 @@ rule fastqc_original:
 	input:
 		expand(["BaseCalls/{sample}_R1_001.fastq.gz", "BaseCalls/{sample}_R2_001.fastq.gz"], sample=SAMPLES)
 	output:
-		expand(["fastqc/original/{sample}_R1_001_fastqc.html", "fastqc/original/{sample}_R2_001_fastqc.html"], sample=SAMPLES)	
+		expand(["fastqc/original/{sample}_R1_001_fastqc.zip", "fastqc/original/{sample}_R2_001_fastqc.zip"], sample=SAMPLES)	
 	message:"Running fastqc on original data"
 	params:
 		FASTQC_ORIG_FOLDER="fastqc/original"
@@ -46,7 +46,7 @@ rule fastqc_cleaned:
 	input:
 		expand(["seqyclean/{sample}_PE1.fastq", "seqyclean/{sample}_PE2.fastq", "seqyclean/{sample}_SE.fastq"], sample=SAMPLES)
 	output:
-		expand(["fastqc/cleaned/{sample}_PE1_fastqc.html", "fastqc/cleaned/{sample}_PE2_fastqc.html", "fastqc/cleaned/{sample}_SE_fastqc.html"], sample=SAMPLES)
+		expand(["fastqc/cleaned/{sample}_PE1_fastqc.zip", "fastqc/cleaned/{sample}_PE2_fastqc.zip", "fastqc/cleaned/{sample}_SE_fastqc.zip"], sample=SAMPLES)
 	params:
 		FASTQC_CLEANED_FOLDER="fastqc/cleaned"
 	shell: "fastqc --outdir {params.FASTQC_CLEANED_FOLDER} --threads 32 {input}"
@@ -109,7 +109,7 @@ rule prokka:
 
 
 rule multiqc:
-	input: 	 expand(["quast/{sample}/report.html", "quast/{sample}/report.pdf", "quast/{sample}/report.tex", "quast/{sample}/report.tsv", "quast/{sample}/report.txt", "quast/{sample}/transposed_report.tex", "quast/{sample}/transposed_report.tsv", "quast/{sample}/transposed_report.txt", "quast/{sample}/quast.log", "fastqc/original/{sample}_R1_001_fastqc.html", "fastqc/original/{sample}_R2_001_fastqc.html", "fastqc/cleaned/{sample}_PE1_fastqc.html", "fastqc/cleaned/{sample}_PE2_fastqc.html", "fastqc/cleaned/{sample}_SE_fastqc.html"], sample=SAMPLES)
+	input: 	 expand(["quast/{sample}/report.html", "quast/{sample}/report.pdf", "quast/{sample}/report.tex", "quast/{sample}/report.tsv", "quast/{sample}/report.txt", "quast/{sample}/transposed_report.tex", "quast/{sample}/transposed_report.tsv", "quast/{sample}/transposed_report.txt", "quast/{sample}/quast.log", "fastqc/original/{sample}_R1_001_fastqc.zip", "fastqc/original/{sample}_R2_001_fastqc.zip", "fastqc/cleaned/{sample}_PE1_fastqc.zip", "fastqc/cleaned/{sample}_PE2_fastqc.zip", "fastqc/cleaned/{sample}_SE_fastqc.zip", "prokka/{sample}/{sample}.err"], sample=SAMPLES)
 	output: 
 		"multiqc_report.html"
 	message:"Running multiqc"

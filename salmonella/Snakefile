@@ -14,7 +14,9 @@ subworkflow reffree:
 	snakefile: "../Snakefile"
 
 rule final:
-	input:  expand( ["mash/{sample}_clean_all.fastq.msh.distance.txt.sorted.txt", "seqsero/{sample}/data_log.txt"], sample=SAMPLES )
+	input:  expand( ["mash/{sample}_clean_all.fastq.msh.distance.txt.sorted.txt", "seqsero/{sample}/data_log.txt"], sample=SAMPLES ),
+		reffree( "multiqc_report.html" ),
+		"seqsero/seqsero_results.txt"
 
 rule mash:
 	input:
@@ -44,3 +46,12 @@ rule seqsero:
 		reffree( "envs/seqsero.yaml" )
 	shell:
 		"/home/workflows/reference_free/SeqSero-master/SeqSero.py -m 2 -d seqsero/{wildcards.sample} -i {input.PE1} {input.PE2}"
+
+
+rule seqsero_results:
+	input:
+		expand( ["seqsero/{sample}/Seqsero_result.txt"], sample=SAMPLES )
+	output:
+		"seqsero/seqsero_results.txt"
+	shell:
+		"tail -vn +1 {input} > {output}"
