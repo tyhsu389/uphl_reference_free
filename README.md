@@ -6,17 +6,15 @@ well as the documentation for running it.
 ## Step 1: Login to your username. Pull or copy the repository into any location.
 
 Pulling the repository is preferred, but the internet speeds are slow, so this \
-make take up to 30 minutes.  
-Copying the repository should be almost instantaneous.
+make take up to 30 minutes. A better way to do this is to:
+1. Go to the gitlab website
+2. Download the repository onto a flash drive
+3. Move the zipped folder into the directory of interest.
 
 ```
 # To pull the repository, use git.
 $ git pull _repository_
-
-# To copy the repository, use "cp" (copy)
-$ cp -r /home/thsu/gitlab/uphl_reference_free
-# Change the permissions to your username so you can use the script
-$ chown <YOURUSER>:state -R uphl_reference_free 
+# This will take an incredibly long time, so 
 ```
 
 ## Step 2: Create the directories for the pipeline.
@@ -39,19 +37,25 @@ Samples should be inside `uphl_reference_free/BaseCalls` (inside a folder named\
 
 ```
 # Move your files (in a folder named "BaseCalls" to the uphl_reference_free folder.
-$ cp -r /path/to/BaseCalls /path/to/uphl_reference_free
+$ mkdir BaseCalls
+$ cp -r /path/to/files /path/to/uphl_reference_free/BaseCalls
 
 # Create a file with your sample names
+## To do this via command line, first get your sample names
 $ ls -lh BaseCalls/* | cut -f10 -d' ' - > samples.txt
 # You will probably have to check this multiple times, the number will not always\
 be "10" after "-f10"
-
-# Open up the text file to take a look
+## Open up the text file to take a look
 $ vi samples.txt
 # Type ":i" to enter "insert mode", where you can type and make edits.
 # Type ":q" to exit.
 # Type ":w" to write/save your changes.
 ```
+
+You can also create your text file using the graphical user interface. 
+1. Go to "Applications" > "Accessories" > "Text Editor"
+2. Add the names of all the "R1" files.
+3. Save the file as `samples.txt` in the `uphl_reference_free` folder.
 
 
 ## Step 4: Run the pipeline-of-interest.
