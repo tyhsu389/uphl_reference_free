@@ -11,13 +11,10 @@ make take up to 30 minutes. A better way to do this is to:
 2. Download the repository onto a flash drive
 3. Move the zipped folder into the directory of interest.
 
-```
-# To pull the repository, use git.
-$ git pull _repository_
-# This will take an incredibly long time, so 
-```
-
 ## Step 2: Create the directories for the pipeline.
+
+Note: This step could possibly be skipped. Tiffany tested this once and it seemed \
+to work.
 
 Tiffany connected the tools within the UPHL Reference Free pipeline using the \
 tool SnakeMake. SnakeMake requires you to create directories (or folders) to \
@@ -42,14 +39,11 @@ $ cp -r /path/to/files /path/to/uphl_reference_free/BaseCalls
 
 # Create a file with your sample names
 ## To do this via command line, first get your sample names
-$ ls -lh BaseCalls/* | cut -f10 -d' ' - > samples.txt
-# You will probably have to check this multiple times, the number will not always\
-be "10" after "-f10"
-## Open up the text file to take a look
-$ vi samples.txt
-# Type ":i" to enter "insert mode", where you can type and make edits.
-# Type ":q" to exit.
-# Type ":w" to write/save your changes.
+## Go into the folder BaseCalls
+$ cd BaseCalls
+## List your files
+$ ls * | grep -v 'R1'
+# Copy into a text file as below
 ```
 
 You can also create your text file using the graphical user interface. 
@@ -144,7 +138,6 @@ $ cp -r /path/to/prokka/*.gff /path/to/to_compare
 $ source activate /home/workflows/miniconda3/envs/roary
 
 # 4. Make a directory for results, and run Roary
-$ mkdir roary
 $ roary -p 32 -f roary -e -n path/to/to_compare/*.gff
 ```
 
@@ -155,10 +148,10 @@ We will use iqtree, which uses maximum likelihood methods to create a tree.
 
 ```
 # 1. Make a directory for the results
-$ mkdr roary/iqtree 
+$ mkdir roary/iqtree 
 
 # 2. Run iqtree
-$ /home/workflows/programs/iqtree-1.6.7.1-Linux/bin/iqtree -s roary/core_gene_alignment.aln \
+$ iqtree -s roary/core_gene_alignment.aln \
 -t RANDOM -m HKY+I+R -bb 1000 -pre /roary/iqtree/iqtree -nt AUTO
 # Note that -pre gives the files a prefix
 ```
