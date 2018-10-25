@@ -14,33 +14,61 @@ subworkflow reffree:
 	snakefile: "../Snakefile"
 
 rule final:
-	input:  expand( ["mash/{sample}_clean_all.fastq.msh.distance.txt.sorted.txt", "seqsero/{sample}/data_log.txt"], sample=SAMPLES )
+	input:  
+		"all_resfinder_out.txt",
+		"all_vfdb_out.txt",
+		"all_ecoh_out.txt"
 
-rule mash:
+rule resfinder:
 	input:
-		PE1 = reffree( "seqyclean/{sample}_PE1.fastq" ),
-		PE2 = reffree( "seqyclean/{sample}_PE2.fastq" ),
-		SE = reffree( "seqyclean/{sample}_SE.fastq" )
+		reffree( "shovill/{sample}/contigs.fa" )
 	output:
-		"mash/{sample}_clean_all.fastq.msh.distance.txt.sorted.txt"
-	run:
-		commands = [
-			"cat {input.PE1} {input.PE2} {input.SE} > mash/{wildcards.sample}_clean_all.fastq",
-			"mash sketch -m 2 mash/{wildcards.sample}_clean_all.fastq",
-			"mash dist /home/workflows/reference_free/ref/refseq.genomes.k21s1000.msh mash/{wildcards.sample}_clean_all.fastq.msh > mash/{wildcards.sample}_clean_all.fastq.msh.distance.txt",
-			"sort -gk3 mash/{wildcards.sample}_clean_all.fastq.msh.distance.txt > mash/{wildcards.sample}_clean_all.fastq.msh.distance.txt.sorted.txt"
-			]
-		for c in commands:
-			shell(c)
-
-rule seqsero:
-	input:
-		PE1 = reffree( "seqyclean/{sample}_PE1.fastq" ),
-		PE2 = reffree( "seqyclean/{sample}_PE2.fastq" )
-	output:
-		"seqsero/{sample}/data_log.txt",
-		"seqsero/{sample}/Seqsero_result.txt"
+		"resfinder/{sample}_resfinder_out.txt"
 	conda:
-		reffree( "envs/seqsero.yaml" )
+		reffree( "envs/abricate.yaml" )
 	shell:
-		"/home/workflows/reference_free/SeqSero-master/SeqSero.py -m 2 -d seqsero/{wildcards.sample} -i {input.PE1} {input.PE2}"
+		"abricate -db resfinder {input} > {output}"
+
+rule VFDB:
+        input:
+                reffree( "shovill/{sample}/contigs.fa" )
+        output:
+                "vfdb/{sample}_vfdb_out.txt"
+        conda:
+                reffree( "envs/abricate.yaml" )
+        shell:
+                "abricate -db vfdb {input} > {output}"
+
+rule ecoh:
+        input:
+                reffree( "shovill/{sample}/contigs.fa" )
+        output:
+                "EcOH/{sample}_EcOH_out.txt"
+        conda:
+                reffree( "envs/abricate.yaml" )
+        shell:
+                "abricate -db ecoh {input} > {output}"
+
+rule cat_resfinder:
+	input:
+		allres = expand( ["resfinder/{sample}_resfinder_out.txt"], sample=SAMPLES )
+	output:
+		res = "all_resfinder_out.txt",
+	shell:
+		"tail -vn +1 {input.allres} > {output.res}"
+
+rule cat_vfdb:
+	input:
+                allvfdb = expand( ["vfdb/{sample}_vfdb_out.txt"], sample=SAMPLES )
+	output:
+                vfdb = "all_vfdb_out.txt",
+	shell:
+		"tail -vn +1 {input.allvfdb} > {output.vfdb}"
+
+rule cat_ecoh:
+	input:
+                allecoh = expand( ["EcOH/{sample}_EcOH_out.txt"], sample=SAMPLES )
+	output:
+                ecoh = "all_ecoh_out.txt"
+	shell:
+		"tail -vn +1 {input.allecoh} > {output.ecoh}"
