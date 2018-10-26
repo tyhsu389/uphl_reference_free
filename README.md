@@ -11,6 +11,11 @@ make take up to 30 minutes. A better way to do this is to:
 2. Download the repository onto a flash drive
 3. Move the zipped folder into the directory of interest.
 
+Note: It is fine to re-use the directory from your last run! Just note that if \
+any programs have been updated, these changes won't be reflected. Also, you may \
+want to store data from previous runs somewhere safe.
+
+
 ## Step 2: Create the directories for the pipeline.
 
 Note: This step could possibly be skipped. Tiffany tested this once and it seemed \
@@ -29,8 +34,11 @@ $ sh scripts/initiate_dirs.sh
 ## Step 3: Add your samples to the folder and put them in a list.
 
 Samples should be inside `uphl_reference_free/BaseCalls` (inside a folder named\
-`BaseCalls`). We only need the `fastq.gz` files. After, add the names of the \
-`R1_001.fastq.gz` files to a file named `samples.txt`.
+`BaseCalls`). We only need the `fastq.gz` files. 
+
+Next, add the names of the `R1_001.fastq.gz` files to a file named `samples.txt`.\
+Be sure each sample is present once! (Don't put both `R1_001.fastq.gz` and \
+`R2_001.fastq.gz`!)
 
 ```
 # Move your files (in a folder named "BaseCalls" to the uphl_reference_free folder.
@@ -95,6 +103,9 @@ $ cp ../samples.txt .
 # Run the pipeline
 $ snakemake -j --use-conda
 ```
+Results will be located in the `uphl_reference_free-master/salmonella/seqsero` \
+folder.
+
 
 ### Run the _E. coli_ pipeline.
 This pipeline only runs SerotypeFinder and ResFinder on the assembled contigs \
@@ -114,6 +125,8 @@ $ cp ../samples.txt .
 # Run the pipeline
 $ snakemake -j --use-conda
 ```
+
+Results will be located in the `uphl_reference_free-master/ecoli` folder.
 
 
 ## Step 5: Find the pan-genome.
@@ -150,9 +163,12 @@ We will use iqtree, which uses maximum likelihood methods to create a tree.
 # 1. Make a directory for the results
 $ mkdir roary/iqtree 
 
+# 2. Change directory into roary.
+$ cd roary
+
 # 2. Run iqtree
-$ iqtree -s roary/core_gene_alignment.aln \
--t RANDOM -m HKY+I+R -bb 1000 -pre /roary/iqtree/iqtree -nt AUTO
+$ iqtree -s core_gene_alignment.aln -t RANDOM -m HKY+I+R -bb 1000 \
+-pre iqtree/iqtree -nt AUTO
 # Note that -pre gives the files a prefix
 ```
 
