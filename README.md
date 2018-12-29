@@ -1,19 +1,36 @@
-# UPHL_Reference_Free
+# Utah Public Health Laboratory (UPHL) Reference-Free Pipeline
 
-Houses scripts Tiffany Hsu wrote to run the UPHL Reference Free pipeline, as \
-well as the documentation for running it.
+### Description
+This repository houses the scripts Tiffany Hsu wrote to automate and run the UPHL \
+Reference-Free pipeline, which was written by Kelly Oakeson (UPHL) and documented \
+[here](https://jcm.asm.org/content/56/11/e00161-18) and [here](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5572866/). Erin Young (UPHL) helped confirm which parameters/options were used \
+for the different steps.
 
-## Step 1: Login to your username. Pull or copy the repository into any location.
+### Goals
+Tiffany Hsu was the APHL-CDC Bioinformatics Fellow placed at the Massachusetts \
+Department of Public Health (MDPH) State Laboratory. She created this repository \
+so that the UPHL Reference-Free pipeline could be:
+1. Pulled onto any Linux computer
+2. Reproducibly run at the Massachusetts State Laboratory (or elsewhere)
+3. Automated and easy for laboratory staff to run 
 
-Pulling the repository is preferred, but the internet speeds are slow, so this \
-make take up to 30 minutes. A better way to do this is to:
-1. Go to the gitlab website
-2. Download the repository onto a flash drive
-3. Move the zipped folder into the directory of interest.
+# Instructions
+## Step 1: Login to your username on the MDPH Linux server. Clone the repository into any location.
 
-Note: It is fine to re-use the directory from your last run! Just note that if \
-any programs have been updated, these changes won't be reflected. Also, you may \
-want to store data from previous runs somewhere safe.
+Cloning the repository is preferred, but may take up to 30 minutes on the MDPH Linux \
+server due to slow internet speeds (the Linux server is on the Bioinformatics Network). \
+Until the new Bioinformatic Network is created, a workaround is to download the repository \
+on a computer connected to the State Network. To do this:
+1. Login to the state computer and go to the gitlab website.
+2. Download the repository onto a flash drive.
+3. Plug the flash drive into the MDPH Linux server, and move the zipped folder into the \
+directory of interest.
+
+Note: If you have already completed the steps above, you may re-use the directory from your \
+last run assuming:
+1. There are no changes to the UPHL Reference-Free Pipeline (or you do not need to run an \
+updated version of the pipeline, AND
+2. You have stored data from a previous run somewhere safe.
 
 
 ## Step 2: Create the directories for the pipeline.
@@ -22,10 +39,10 @@ Note: This step could possibly be skipped. Tiffany tested this once and it seeme
 to work.
 
 Tiffany connected the tools within the UPHL Reference Free pipeline using the \
-tool SnakeMake. SnakeMake requires you to create directories (or folders) to \
-store the output before being run. Create directories within the \
-`uphl_reference_free` folder.
-
+tool [SnakeMake](https://snakemake.readthedocs.io/en/stable/). SnakeMake utilizes \
+snakefiles to find input and determine where to place output files. The input and \
+output directories can be created beforehand in the `uphl_reference_free` folder using \
+the steps below: 
 ```
 # Run the included script to generate the directories.
 $ sh scripts/initiate_dirs.sh 
