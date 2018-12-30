@@ -155,8 +155,8 @@ the pan-genome.
 
 Roary takes gene calls from your set of genomes, and determine which genes are "core"\
 genes (all species have them) as opposed to "dipensable" (specific to certain \
-strains or species). In order to compare our strain set, we will be using the \
-core genome output by Roary.
+strains or species). We will ue the core genome output from Roary to compare out \
+strain set.
 
 ```
 # 1. Make sure you are in the "uphl_reference_free" directory.
@@ -171,10 +171,12 @@ $ source activate /home/workflows/miniconda3/envs/roary
 
 # 4. Make a directory for results, and run Roary
 $ roary -p 32 -f roary -e -n path/to/to_compare/*.gff
+# -f specifies the output directory, while -e asks Roary to create a multifasta \
+alignment of core genes
 ```
 
 
-## Step 6: Create a tree.
+## Step 6: Create a tree from the core genome alignment.
 
 We will use iqtree, which uses maximum likelihood methods to create a tree.
 
@@ -194,7 +196,7 @@ $ iqtree -s core_gene_alignment.aln -t RANDOM -m HKY+I+R -bb 1000 \
 
 ## Step 7: Visualize the tree.
 
-UPHL does this in R. We can do this in:
+UPHL does this in R using the package Ape. For now, we will do this in:
 1. FigTree
 2. CLC Genomics Workbench
 
